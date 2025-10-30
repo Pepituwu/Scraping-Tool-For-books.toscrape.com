@@ -125,7 +125,7 @@ def get_books_in_page(category = "books_1", page: int = 1):
     books.append(get_image_urls(category, page))
     return books
 
-def get_all_books(category='books_1'):
+def get_all_books(category='books_1', max_pages=None):
     all_books = []
     names = []
     prices = []
@@ -137,6 +137,8 @@ def get_all_books(category='books_1'):
     if requests.get(f'https://books.toscrape.com/catalogue/category/books/{category}/page-1.html').status_code == 200:
         page = 1
         while requests.get(f'https://books.toscrape.com/catalogue/category/books/{category}/page-{page}.html').status_code == 200:
+            if max_pages and page > max_pages:
+                break
             url = f'https://books.toscrape.com/catalogue/category/books/{category}/page-{page}.html'
             names.extend(get_names(category, page))
             prices.extend(get_prices(category, page))
@@ -153,7 +155,7 @@ def get_all_books(category='books_1'):
         all_books.append(image_urls)
     
     elif category == 'books_1':
-        for page in range(1, 51):
+        for page in range(1, max_pages + 1 if max_pages else 51):
             names.extend(get_names(category, page))
             prices.extend(get_prices(category, page))
             availabilitys.extend(get_availability(category, page))
@@ -211,5 +213,4 @@ def download_images(data, category='books_1'):
         print(image_url)
         image_name = data[0][i].replace(' ', '-').replace('/', '_') + '.jpg'
         download_image(image_url, f'outputs/{category}/{image_name}')
-
 

@@ -2,3 +2,5 @@ requests
 scrapy
 pandas
 os
+argparse
+time
